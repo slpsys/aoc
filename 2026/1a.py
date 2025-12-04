@@ -1,3 +1,4 @@
+from abc import ABC, abstractmethod
 from enum import Enum
 import sys
 
@@ -5,12 +6,22 @@ class Direction(Enum):
     LEFT  = 0
     RIGHT = 1
 
-class Dial:
+
+class Dial(ABC):
     MAX = 100
 
-    def __init__(self):
+    def __init__(self): 
         self.value  = 50
         self.zeroed = 0
+
+    @classmethod
+    @abstractmethod
+    def rotate(self, amount: int, direction: Direction):
+        pass
+
+class OnZeroDial(Dial):
+    def __init__(self):
+        super().__init__()
 
     def rotate(self, amount: int, direction: Direction): 
         if direction == Direction.LEFT:
@@ -19,6 +30,24 @@ class Dial:
             self.value = (self.value + amount) % Dial.MAX
         if self.value == 0:
             self.zeroed += 1
+        self
+
+class ThroughZeroDial(Dial):
+    def __init__(self):
+        super().__init__()
+
+    def rotate(self, amount: int, direction: Direction): 
+        orig_value = self.value
+        for i in range(amount):
+            last_value = self.value
+            if direction == Direction.LEFT:
+                self.value = (self.value - 1) % Dial.MAX
+                if self.value == 0:
+                    self.zeroed += 1
+            else:
+                self.value = (self.value + 1) % Dial.MAX
+                if self.value == 0:
+                    self.zeroed += 1
         self
     
 def parse_line(line: str):
@@ -33,7 +62,7 @@ def parse_line(line: str):
 
     return [amount, direction]
 
-d = Dial()
+d = ThroughZeroDial()
 for line in sys.stdin:
     d.rotate(*parse_line(line.rstrip()))
 
