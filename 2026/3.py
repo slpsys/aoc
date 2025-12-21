@@ -1,6 +1,4 @@
-from functools import reduce
 from heapq import *
-from itertools import combinations
 import sys
 
 class Battery():
@@ -120,4 +118,4 @@ for line in sys.stdin:
     acc_str += f"{j} "
 
 print(acc)
-# print(acc_str)
+#print(acc_str)
