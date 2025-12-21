@@ -1,5 +1,6 @@
 from functools import reduce
 from heapq import *
+from itertools import combinations
 import sys
 
 class Battery():
@@ -30,11 +31,8 @@ class Battery():
     
     def __str__(self) -> str:
         return f"Joltage: {self.joltage}"
-    
-    
 
 class BatteryBank():
-
     def __init__(self, *batteries: list[Battery]): 
         self.battery_heap = []
 
@@ -73,9 +71,40 @@ class BatteryBank():
     def __str__(self) -> str:
         battery_string = ",".join(map(lambda b: str(b), self.battery_heap))
         return f"Battery Bank: [{battery_string}]"
+
+class BatteryBank2():
+    def __init__(self, size=12):
+        self.max_joltage = ""
+        self.size = size
+
+    def add_battery(self, joltage: int):
+        if len(self.max_joltage) == self.size:
+            self._evaluate_for_add(joltage)
+        else:
+            self.max_joltage += str(joltage)
+
+    def _evaluate_for_add(self, joltage: int):
+        max = int(self.max_joltage)
+        for i in range(len(self.max_joltage)):
+            cnd = int(self.max_joltage[:i] + self.max_joltage[i + 1:] + str(joltage))
+            if cnd > max:
+                max = cnd
+        self.max_joltage = str(max)
+
+    def joltage(self) -> int:
+        return int(self.max_joltage)
+
+    def __str__(self) -> str:
+        return str(self.max_joltage)
     
 def parse_line(line: str) -> BatteryBank:
     bank = BatteryBank()
+    for c in line:
+        bank.add_battery(int(c))
+    return bank
+
+def parse_line2(line: str) -> BatteryBank2:
+    bank = BatteryBank2()
     for c in line:
         bank.add_battery(int(c))
     return bank
@@ -84,11 +113,11 @@ acc = 0
 acc_str = ""
 for line in sys.stdin:
     ls = line.rstrip()
-    b = parse_line(ls)
+    b = parse_line2(ls)
     j = b.joltage()
-    acc_str += str(j) + " "
+
     acc += j
+    acc_str += f"{j} "
 
 print(acc)
-print(acc_str)
-    
+# print(acc_str)
