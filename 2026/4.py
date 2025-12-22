@@ -34,31 +34,43 @@ def assess_cell(rows: list[str], p: Point, box: BoundingBox, on_char: str) -> in
 
             if rows[iy][ix] == on_char:
                 val += 1
-    #print(f"Evaluating ({x}, {y}): {box}, {val}. {list(range(box.nw_x, box.se_x))} x {list(range(box.nw_y, box.se_y))}")
-
     return val
 
 def assess_rolls(rows: list[str], on_char: str = "@") -> int:
-    # Assme rectangular
+    # Assume rectangular
     height = len(rows)
     width = len(rows[0])
     accessible = []
 
     for row in range(height):
         for column in range(width):
+            p = Point(column, row)
             if rows[row][column] != on_char:
                 continue
 
-            bounding_box = safe_offset(Point(column, row), width - 1, height - 1)
-            score = assess_cell(rows, Point(column, row), bounding_box, on_char)
+            bounding_box = safe_offset(p, width - 1, height - 1)
+            score = assess_cell(rows, p, bounding_box, on_char)
             if score < 4:
-                accessible.append(Point(column, row))
+                accessible.append(p)
     return accessible
+
+def replace_rolls(rows: list[str], rolls: list[Point], replacement_char: str="."):
+    for r in rolls:
+        rows[r.y] = rows[r.y][0:r.x] + replacement_char + rows[r.y][r.x + 1:]
 
 grid_rows = []
 for line in sys.stdin:
     ls = line.rstrip()
     grid_rows.append(ls)
 
-accessible_rolls = assess_rolls(grid_rows)
-print(len(accessible_rolls))
+removed = 0
+while True:
+    accessible_rolls = assess_rolls(grid_rows)
+    
+    if len(accessible_rolls) == 0:
+        break
+
+    removed += len(accessible_rolls)
+    replace_rolls(grid_rows, accessible_rolls)
+
+print(removed)
