@@ -65,7 +65,6 @@ def parse_line(s: str, v: list[VectorOperation]):
     if (len(bufs) > 0):
         _process_token(bufs, v, token_index)
         
-# Part B
 v = []
 for line in sys.stdin:
     ls = line.rstrip()
