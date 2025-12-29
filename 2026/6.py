@@ -1,6 +1,5 @@
 from enum import Enum
 from functools import reduce
-import re
 import sys
 
 class OperationType(Enum):
